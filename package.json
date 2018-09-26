@@ -1,0 +1,45 @@
+{
+  "name": "fccs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/SteveAtSentosa/fccs.git",
+  "author": "Steven Saunders <steve@sentosatech.com>",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf es dist lib",
+    "build:cjs": "cross-env BABEL_ENV=cjs babel src --out-dir lib",
+    "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
+    "build:umd": "webpack --mode=development --output-filename=fccs.js",
+    "build:umd:min": "webpack --mode=production --output-filename=fccs.min.js",
+    "build": "yarn build:cjs && yarn build:es && yarn build:umd && yarn build:umd:min",
+    "prepub": "yarn clean && yarn test && yarn build",
+    "test": "mocha --require @babel/register",
+    "watch:test": "onchange 'src/**/*.js' 'test/**/*.js' -- yarn test"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.1",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/register": "^7.0.0",
+    "babel-eslint": "^9.0.0",
+    "babel-loader": "^8.0.2",
+    "chai": "^4.1.2",
+    "clean-webpack-plugin": "^0.1.19",
+    "cross-env": "^5.2.0",
+    "eslint": "^5.6.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-babel": "^5.2.0",
+    "eslint-plugin-emotion": "^9.2.6",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-mocha": "^5.2.0",
+    "mocha": "^5.2.0",
+    "onchange": "^4.1.0",
+    "ramda": "^0.25.0",
+    "rimraf": "^2.6.2",
+    "webpack": "^4.19.0",
+    "webpack-cli": "^3.1.0"
+  },
+  "dependencies": {
+    "emotion": "^9.2.9"
+  }
+}
