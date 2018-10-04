@@ -1,12 +1,21 @@
 import runTypeUtilTests from './utils/testTypeUtils';
 import runCssUtilTests from './utils/testCssUtils';
-import runAtomUtilTests from './utils/testAtomsUtils';
-import runMappingTests from './maps/testSpacingMap';
-import runAtomTests from './testAtoms';
+import runAtomicUtilTests from './utils/testAtomicUtils';
+import runAtomicFunctionTests from './utils/testAtomicFunctions';
+import runSpacingTests from './styling/testSpacing';
+import runColorTests from './styling/testColor';
+import runLayoutTests from './styling/testLayout';
+import runResponsiveTests from './modifiers/testResponsive';
+
+
 
 describe('fccs tests', ()=>{
   runTypeUtilTests();
-  runMappingTests();
   runCssUtilTests();
-  runAtomUtilTests();
+  runAtomicUtilTests();
+  runAtomicFunctionTests();
+  runSpacingTests();
+  runColorTests();
+  runLayoutTests();
+  runResponsiveTests();
 });

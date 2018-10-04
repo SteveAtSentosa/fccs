@@ -1,4 +1,3 @@
-import { cssMap } from './maps/css';
 
 const atoms = {};
 
