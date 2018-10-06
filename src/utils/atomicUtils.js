@@ -1,6 +1,5 @@
-import { isObj, isStr, arrayify, isNumOrNonEmptyStr, isUndef, toStr, isNonEmptyStr, isArrOrStrOrNum, isFn } from './typeUtils';
+import { isObj, isStr, arrayify, isNumOrNonEmptyStr, isUndef, toStr, isNonEmptyStr, isArrOrStrOrNum, isFn, flatten } from './typeUtils';
 import  { cssKeysToSpec, fillCssTemplate } from './cssUtils';
-import { isRxOutput } from '../modifiers/responsive';
 
 // import { pickSpecEntry, assocSpecEntry, fillCssTemplate } from './cssUtils';
 
@@ -20,27 +19,31 @@ import { isRxOutput } from '../modifiers/responsive';
 // { atomType, spec, css, atoms }
 
 export const ATOMIC_V_TAG = '_@_atomic_vector';
-// export const PSUEDO_SEL_TAG = '_@_psuedo_sel';
 
 // is atom input valid?
+// {} -> '' -> '' -> bool
 export const validAtomInput = (atoms, atomType, cssSpec) =>
   isObj(atoms) && isNonEmptyStr(atomType) && isNumOrNonEmptyStr(cssSpec);
 
 // get an atom prop, assumes all input is valid.
 // Make sure you do input type checking via validAtomInput()  before calling
+// {} -> '' -> '' -> 'cssStr'
 export const atomProp = (atoms, atomType, cssSpec) =>  atoms[atomType][toStr(cssSpec)];
 
 // does atom type exist?  (resistant to invalid input)
+// {} -> '' -> bool
 export const atomTypeExists = (atoms, atomType) =>
   isObj(atoms) && isNonEmptyStr(atomType) && isObj(atoms[atomType]);
 
 // associate an atomic property
+// {} -> '' -> '' -> '' -> n/a
 export const atomAssoc = (atoms, atomType, cssSpec, cssStr) => {
   if (!atomTypeExists(atoms, atomType)) atoms[atomType] = {};
   atoms[atomType][cssSpec] = cssStr;
 };
 
 // does an atom exist?  (resistant to invalid input)
+// {} -> '' -> '' -> bool
 export const atomExists = (atoms, atomType, cssSpec) =>
   validAtomInput(atoms, atomType, cssSpec) &&
   atomTypeExists(atoms, atomType) &&
@@ -48,7 +51,7 @@ export const atomExists = (atoms, atomType, cssSpec) =>
 
 // Given an atomType and cssSpec return the corresponding atom cssStr
 // Returns empty string if atom does not exist or on invalid input
-// {} -> '' -> '' -> {atom}
+// {} -> '' -> '' -> 'cssStr'
 export const getAtomCss = (atoms, atomType, cssSpec) =>
   atomExists(atoms, atomType, cssSpec) ? atomProp(atoms, atomType, cssSpec) : '';
 
@@ -56,8 +59,8 @@ export const getAtomCss = (atoms, atomType, cssSpec) =>
 // or undefined if atom does not exist or on invalid input
 export const getAtomicVector = (atoms, atomType, cssSpec) =>
   atomExists(atoms, atomType, cssSpec) ?
-  { type: atomType, spec: cssSpec,
-    css: atomProp(atoms, atomType, cssSpec), atoms, tag: ATOMIC_V_TAG } : undefined;
+    { type: atomType, spec: cssSpec, css: atomProp(atoms, atomType, cssSpec), atoms, tag: ATOMIC_V_TAG } :
+    undefined;
 
 export const isAtomicVector = toCheck =>
   isObj(toCheck) && toCheck.tag === ATOMIC_V_TAG;
@@ -65,7 +68,7 @@ export const isAtomicVector = toCheck =>
 // Given atomType, cssSpec and the corresponding cssStr
 // add the atom to the atom object, or do nothing on invalid input
 // Return the vector for atom that was added or undefined on invalid input
-// {} -> '' -> '' -> ''|number -> '' -> {atomicVecto0r}
+// {} -> '' -> '' -> ''|number -> '' -> {av} | undefined
 export const addAtom = (atoms, atomType, cssSpec, cssStr) => {
   if (!validAtomInput(atoms, atomType, cssSpec) || !isStr(cssStr)) return undefined;
   atomAssoc(atoms, atomType, cssSpec, cssStr);
@@ -75,10 +78,11 @@ export const addAtom = (atoms, atomType, cssSpec, cssStr) => {
 // Serve an atomic request.
 // If requested atom exists, return corresponding atomic vector
 // If requested atom doesn't exist, adds it and return corresponding atomic vector
-// Returns ??? on invalid input ???
-export const atom = (atoms, atomType, mapCssKeysToValsFn, cssTemplate, cssKeys) => {
+// Return undefined in invalid input
+// {} -> '' -> () '' -> [''] -> {av} | undefined
+export const atom = (atoms, atomType, mapCssKeys, cssTemplate, cssKeys) => {
 
-  if (!isObj(atoms) || !isStr(atomType) || !isStr(cssTemplate) || !isArrOrStrOrNum(cssKeys) || !isFn(mapCssKeysToValsFn))
+  if (!isObj(atoms) || !isStr(atomType) || !isStr(cssTemplate) || !isArrOrStrOrNum(cssKeys) || !isFn(mapCssKeys))
     return undefined;
 
   const cssSpec = cssKeysToSpec(arrayify(cssKeys));
@@ -86,26 +90,26 @@ export const atom = (atoms, atomType, mapCssKeysToValsFn, cssTemplate, cssKeys) 
   if (atomExists(atoms, atomType, cssSpec))
     return getAtomicVector(atoms, atomType, cssSpec);
 
-  const cssStr = fillCssTemplate(mapCssKeysToValsFn(arrayify(cssKeys)), cssTemplate);
+  const cssStr = fillCssTemplate(mapCssKeys(arrayify(cssKeys)), cssTemplate);
   return addAtom(atoms, atomType, cssSpec, cssStr);
 };
 
-// create a function which will accept 1 or more cssKeys as arguments, returing corresponding cssStr
-export const makeAtomicFn = (atoms, atomType, mapCssKeysToValsFn, cssTemplate) =>
-  (...cssKeys) => atom(atoms, atomType, mapCssKeysToValsFn, cssTemplate, cssKeys);
+// create a function which will accept 1 or more cssKeys as arguments, returing corresponding atomic vector
+// {} -> '' -> () '' -> (['cssKeys']) -> {av}
+export const makeAtomicFn = (atoms, atomType, mapCssKeys, cssTemplate) =>
+  (...cssKeys) => atom(atoms, atomType, mapCssKeys, cssTemplate, cssKeys);
 
+// Receives an atomic vector list consisting of atomic vectors, or nested atomic vector lists
+// The supplied list can contain lists nested to any level
+// Returns list of corresponsing cssStr's
+// [ {av} &| [ {av} ]] => ['cssStr']
+export const fcx = (...atomicVectors) => flatten(atomicVectors).map(vec=>vec.css);
 
+// Given an atomic map, return object containing corresponding atomic functions
+// {} -> {} -> {}
 export const mapAtomicFns = (atoms, atomicMap) =>
   !isObj(atoms) || !isObj(atomicMap) ? {} :
   Object.keys(atomicMap).reduce((acc,cssProp)=>{
     const { atomType, cssTemplate, mapFn } = atomicMap[cssProp];
     return {...acc, [atomType]: makeAtomicFn(atoms, atomType, mapFn, cssTemplate)};
   }, {});
-
-// receives unlimited number of atomic vectors and/or modifier vectors(name????), returns corresponding array of css output
-export const fcx = (...cssInput) =>
-  cssInput.reduce((acc, cssIn)=>
-    isAtomicVector(cssIn) ? [...acc, cssIn.css] :
-    isRxOutput(cssIn) ? [...acc, ...cssIn.map(t=>t.css)] :
-    acc, []);
-

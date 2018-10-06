@@ -22,10 +22,17 @@ export const arraifyAndReflect = v => arrayify(v);
 
 // below belongs in dataUtils.js
 
+export const capitalize = str =>
+  str.charAt(0).toUpperCase() + str.slice(1);
+
 // remove array duplicates (experimental, only works on arrays of built in types )
 export const unique = toPrune =>
   isArr(toPrune) ? [...new Set(toPrune)] : toPrune;
 
+export const flatten = arr =>
+  arr.reduce((acc, val) => Array.isArray(val) ? acc.concat(flatten(val)) : acc.concat(val), []);
+
+// TODO: can get rid of this when I untag AV lists
 // honors immutability
 export const assoc = (propName, propVal, target) => {
   const updated =

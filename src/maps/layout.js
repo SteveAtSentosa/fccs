@@ -19,7 +19,9 @@ export const displayKeyMap = {
 
 export const mapDisplayKeys = makeKeyMapFn(displayKeyMap);
 
-export const displayAtomicMap = { display: { atomType: 'd',  cssTemplate: 'display: $1', mapFn: mapDisplayKeys }};
+export const displayAtomicMap = {
+  display: { atomType: 'd',  cssTemplate: 'display: $1', mapFn: mapDisplayKeys }
+};
 
 export const flexKeyMap = {
   unit: '',
@@ -59,6 +61,3 @@ export const flexAtomicMap = {
   flexBasis:      { atomType: 'fxb',  cssTemplate: 'flex-basis: $1',    mapFn: arraifyAndReflect },
   flex:           { atomType: 'fx',   cssTemplate: 'flex: $1 $2 $3',    mapFn: arraifyAndReflect },
 };
-
-
-// flex-direction flex-wrap|initial|inherit;

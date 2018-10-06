@@ -1,9 +1,9 @@
-import  {  expect } from 'chai';
-import { mapAtomicFns } from '../../src/utils/atomicUtils';
-import { flexAtomicMap }  from '../../src/maps/layout';
+import {  expect } from 'chai';
+import { mapAtomicFns, fcx } from '../../src/utils/atomicUtils';
+import { displayAtomicMap, flexAtomicMap }  from '../../src/maps/layout';
 import { spacingAtomicMap } from '../../src/maps/spacing';
 import { colorAtomicMap } from '../../src/maps/color';
-import { rxSm, makeReponsiveFns, responsiveOutput } from '../../src/modifiers/responsive';
+import { mapResponsiveFns, rxMap } from '../../src/modifiers/responsive';
 
 // import { mergeDeepRight } from 'ramda';
 // import { mapSpacingKeys, spacingKeyMap, spacingAtomicMap } from '../../src/maps/spacing';
@@ -19,7 +19,7 @@ import { rxSm, makeReponsiveFns, responsiveOutput } from '../../src/modifiers/re
 //   from '../../src/utils/atomicUtils';
 
 export default function runResponsiveTests() {
-  describe('Atomoic request tests', ()=>{
+  describe('Resonsive tests', ()=>{
     testResponsiveAtoms();
   });
 }
@@ -28,29 +28,34 @@ function testResponsiveAtoms() {
 
   describe('responsive atoms', ()=> {
 
-    const padTemplate = 'padding: $1 $2 $3 $4';
-    const mrgVertTmplt = 'margin: $1 0';
-    const fxfTmplt = 'flex-flow: $1 $2';
-
     it('should handle reactive modifiers correctly',()=>{
 
       const atoms = {};
-      let atomRef = {};
-
       const atomicFns = {
         ...mapAtomicFns(atoms, spacingAtomicMap),
+        ...mapAtomicFns(atoms, displayAtomicMap),
         ...mapAtomicFns(atoms, flexAtomicMap),
         ...mapAtomicFns(atoms, colorAtomicMap)
       };
 
-      const { p, m, mv, fxf } = atomicFns;
-      const res = rxSm(p(0), m(1));
-      console.log('res: ', res);
+      const { p, m, c, bgc, d, fxd } = atomicFns;
 
-      console.log('atoms: ', atoms);
+      const rfn = mapResponsiveFns(rxMap);
+      // console.log('af: ', af);
+
+      const { rxMd, rxLg } = rfn;
+
+      const res = fcx(
+        d('fx'), fxd('col'), p(0), m(0), c('red:400'), bgc('grey'),
+        rxMd(p(1), m(1), fxd('row')),
+        rxLg(p(2), m(2), fxd('row'))
+      );
+
+      // console.log('res: ', res);
+      // console.log('atoms: ', atoms);
+
       // const av = p(2);
       // console.log('av: ', av);
-
 
       // const tr = responsiveOutput('rxSm', av);
       // console.log('tr: ', tr);

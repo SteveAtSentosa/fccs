@@ -1,3 +1,7 @@
+// TODO:
+// * probably don't need tagged identifiers, just look for lists, and deconstruct
+//   In fact, I can probably make a recursive approach which chan handle any depth of nested vector lists
+//   Look for general solution that can be applied to fxc, and modifiers like hover.
 
 const atoms = {};
 

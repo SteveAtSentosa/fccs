@@ -6,6 +6,7 @@ import runSpacingTests from './styling/testSpacing';
 import runColorTests from './styling/testColor';
 import runLayoutTests from './styling/testLayout';
 import runResponsiveTests from './modifiers/testResponsive';
+import runPseudoTests from './modifiers/testPseudo';
 
 
 
@@ -18,4 +19,5 @@ describe('fccs tests', ()=>{
   runColorTests();
   runLayoutTests();
   runResponsiveTests();
+  runPseudoTests();
 });
