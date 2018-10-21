@@ -6,6 +6,9 @@ import { colorAtomicMap } from '../../src/maps/color';
 import { mapResponsiveFns, rxMap } from '../../src/modifiers/responsive';
 import { mapPseudoFns, psuedoMap } from '../../src/modifiers/pseudo';
 
+// TODO:
+// * Currently there is no real testing, just console logging for visual inspection
+
 export default function runPseudoTests() {
   describe('Psedo selector tests', ()=>{
     testPsuedoAtoms();
@@ -42,7 +45,7 @@ function testPsuedoAtoms() {
         rxLg(p(2), m(2), fxd('row'))
       );
 
-      // console.log('res: ', res);
+      console.log('res: ', res);
       // console.log('atoms: ', atoms);
 
     });

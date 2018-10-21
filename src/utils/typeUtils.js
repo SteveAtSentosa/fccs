@@ -31,14 +31,3 @@ export const unique = toPrune =>
 
 export const flatten = arr =>
   arr.reduce((acc, val) => Array.isArray(val) ? acc.concat(flatten(val)) : acc.concat(val), []);
-
-// TODO: can get rid of this when I untag AV lists
-// honors immutability
-export const assoc = (propName, propVal, target) => {
-  const updated =
-    isObj(target) ? {...target} :
-    isArr(target) ? [...target] : {};
-  updated[propName] = propVal;
-  return updated;
-};
-

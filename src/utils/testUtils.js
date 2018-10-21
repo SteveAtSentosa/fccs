@@ -43,7 +43,7 @@ export const getListSample = list =>
 // return at list of random samples from list, with numSamples entries
 export const sampleList = (list, numSamples) => {
   if (!isArr(list) || !isNum(numSamples)) return [];
-  let samples = [];
+  const samples = [];
   while (samples.length < numSamples) {
     samples.push(getListSample(list));
   }

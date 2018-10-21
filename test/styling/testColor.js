@@ -40,7 +40,7 @@ function testColorRequests() {
 
     it('should handle color requests correctly',()=>{
 
-      let atoms = {};
+      const atoms = {};
       let atomRef = {};
 
       // tests with hard coded input/results, independent of utils
@@ -96,11 +96,12 @@ function testColorRequests() {
         expect(atom(atoms, t.type, t.mapFn, t.template, t.cssKeys)).to.deep.equal(t.expectVector);
         atomRef = mergeDeepRight(atomRef, vectorToAtom(t.expectVector));
         expect(atoms).deep.equal(atomRef);
+        return null;
       });
     });
 
     it('should handle invalid color requests correctly',()=>{
-      let atoms = {};
+      const atoms = {};
       const bgcTempalte = 'background-color: $1';
       expect(atom([atoms], 'bgc', mapColorKeys, bgcTempalte, 'cyan:a100')).to.deep.equal(undefined);
       expect(atom(atoms, {bgc:'bgc'}, mapColorKeys, bgcTempalte, 'cyan:a100')).to.deep.equal(undefined);

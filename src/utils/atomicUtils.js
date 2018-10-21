@@ -1,4 +1,4 @@
-import { isObj, isStr, arrayify, isNumOrNonEmptyStr, isUndef, toStr, isNonEmptyStr, isArrOrStrOrNum, isFn, flatten } from './typeUtils';
+import { isObj, isStr, arrayify, isNumOrNonEmptyStr, isUndef, toStr, isNonEmptyStr, isArrOrStrOrNum, isFn, reflect, flatten } from './typeUtils';
 import  { cssKeysToSpec, fillCssTemplate } from './cssUtils';
 
 // import { pickSpecEntry, assocSpecEntry, fillCssTemplate } from './cssUtils';
@@ -7,7 +7,7 @@ import  { cssKeysToSpec, fillCssTemplate } from './cssUtils';
 //   pt : { <-- atom type
 //     1:            'padding-top: 0.25rem', <-- an atom,  applied via atomic fxn pt(1)
 //     2:            'padding-top: 0.5rem'   <-- another atom, applied via atomic fxn pt(2)
-//     ^              ^                 ^
+//     ^              ^
 //     cssSpec        cssStr (css string or classname, depening upon definition of toClass())
 //
 //   c : { <-- a second atom type
@@ -94,10 +94,10 @@ export const atom = (atoms, atomType, mapCssKeys, cssTemplate, cssKeys) => {
   return addAtom(atoms, atomType, cssSpec, cssStr);
 };
 
-// create a function which will accept 1 or more cssKeys as arguments, returing corresponding atomic vector
-// {} -> '' -> () '' -> (['cssKeys']) -> {av}
-export const makeAtomicFn = (atoms, atomType, mapCssKeys, cssTemplate) =>
-  (...cssKeys) => atom(atoms, atomType, mapCssKeys, cssTemplate, cssKeys);
+// create a function which will accept 1 or more cssKeys and/or themeProps as arguments, and returns corresponding atomic vector
+// {} -> '' -> () '' -> (['cssKeys &| 'themeProps]) -> {av}
+export const makeAtomicFn = (atoms, atomType, mapCssKeys, cssTemplate, mapThemeProps=reflect) =>
+  (...cssKeys) => atom(atoms, atomType, mapCssKeys, cssTemplate, mapThemeProps(cssKeys));
 
 // Receives an atomic vector list consisting of atomic vectors, or nested atomic vector lists
 // The supplied list can contain lists nested to any level
@@ -113,3 +113,4 @@ export const mapAtomicFns = (atoms, atomicMap) =>
     const { atomType, cssTemplate, mapFn } = atomicMap[cssProp];
     return {...acc, [atomType]: makeAtomicFn(atoms, atomType, mapFn, cssTemplate)};
   }, {});
+

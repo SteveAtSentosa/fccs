@@ -2,7 +2,8 @@ import  {  expect } from 'chai';
 import { mergeDeepRight } from 'ramda';
 import { vectorToAtom } from '../../src/utils/testUtils';
 import { ATOMIC_V_TAG, makeAtomicFn, mapAtomicFns, fcx  } from '../../src/utils/atomicUtils';
-
+import { theme } from '../../src/maps/theme';
+import { makeThemeMapFn } from '../../src/utils/themeUtils';
 import { mapSpacingKeys, spacingAtomicMap } from '../../src/maps/spacing';
 import { mapColorKeys } from '../../src/maps/color';
 import { mapDisplayKeys } from '../../src/maps/layout';
@@ -10,6 +11,7 @@ import { mapDisplayKeys } from '../../src/maps/layout';
 export default function runAtomicFunctionTests() {
   describe('Atomoic request tests', ()=>{
     testAtomicFunctions();
+    testThemedAtomicFunctions();
     testAtomicTransformer();
     testAtomicFunctionAdd();
   });
@@ -66,6 +68,36 @@ function testAtomicFunctions() {
   });
 }
 
+function testThemedAtomicFunctions() {
+  describe('atomic functions', ()=> {
+
+    // TBD: tests need to be added
+
+    it('should create themed atomic functions correctly',()=>{
+      const atoms = {};
+      //let atomRef = {};
+
+      const themedAtomicFns = {};
+      const mapColorThemes = makeThemeMapFn(theme, 'color');
+
+      // const rrr = mapColorThemes('red:300', '@standOut');
+      // console.log('rrr: ', rrr);
+
+      // TODO: add tests
+
+      themedAtomicFns['c'] = makeAtomicFn(atoms, 'c', mapColorKeys, colorTemplate, mapColorThemes);
+      const { c } = themedAtomicFns;
+      // const c1 = c('red:300');
+      // const c2 = c('@standOut');
+      // console.log('c1: ', c1.css);
+      // console.log('c2: ', c2.css);
+    });
+  });
+}
+
+
+
+
 function testAtomicTransformer() {
   describe('atomic transformer', ()=> {
 
@@ -94,6 +126,37 @@ function testAtomicTransformer() {
 
       expectArr = ['padding: 0rem;', 'margin: 2rem 0;', 'display: inline-block;', 'color: #22292f;'];
       expect(fcx(p(0), mv(8), d('ib'), c('black'))).to.deep.equal(expectArr);
+
+      // TODO: passthrough not working
+      // expectArr = ['color: my-color;'];
+      // expect(fcx(c('my-color'))).to.deep.equal(expectArr);
+
+      // expectArr = ['padding: 100px 200px;'];
+      // expect(fcx(p('100px', '200px'))).to.deep.equal(expectArr);
+
+    });
+
+    it('should transform themed atomic output correctly',()=>{
+      const atoms = {};
+
+      const atomicFns = {};
+      const mapColorThemes = makeThemeMapFn(theme, 'color');
+      const mapBackgroundThemes = makeThemeMapFn(theme, 'backgroundColor');
+
+      atomicFns['c'] = makeAtomicFn(atoms, 'c', mapColorKeys, colorTemplate, mapColorThemes);
+      atomicFns['bgc'] = makeAtomicFn(atoms, 'bgc', mapColorKeys, colorTemplate, mapBackgroundThemes);
+      atomicFns['p'] = makeAtomicFn(atoms, 'p', mapSpacingKeys, padTemplate, makeThemeMapFn(theme, ''));
+      atomicFns['mv'] = makeAtomicFn(atoms, 'mv', mapSpacingKeys, mrgVertTemplate, makeThemeMapFn(theme, ''));
+
+
+      let expectArr = [];
+      const { c, bgc, p, mv } = atomicFns;
+
+      // TODO: add more tests
+      expectArr = ['padding: 0.5rem 2rem 0.75rem;', 'margin: 0.25rem 0;'];
+      expect(fcx(p('@narrow', '@wide', 3, '100px'), mv('@veryNarrow'))).to.deep.equal(expectArr);
+
+
     });
   });
 }
@@ -103,7 +166,7 @@ function testAtomicFunctionAdd() {
 
     it('should add atomic functions correctly',()=>{
 
-      let atoms = {};
+      const atoms = {};
       const atomicFns =  mapAtomicFns(atoms, spacingAtomicMap);
 
       let expectArr = [];

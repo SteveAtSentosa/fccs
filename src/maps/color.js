@@ -1,4 +1,3 @@
-
 import { isStr, isObj, isArrOrStr, arrayify, isUndef } from '../utils/typeUtils';
 
 // This module defines a color pallete based on a base color name, and associated shades

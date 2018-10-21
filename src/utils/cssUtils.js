@@ -7,7 +7,7 @@ import { isArr, isStr, isArrOrStr, toStr, isObj, isUndef, isNumOrStr, arrayify }
 export const fillCssTemplate = (cssVals, cssTemplate) =>
   !isArrOrStr(cssVals) || !isStr(cssTemplate) ? '' :
   arrayify(cssVals).reduce((acc, cssVal, i) =>
-    acc.replace(new RegExp(`\\$${i+1}`, 'g'), cssVal), cssTemplate).split(/ *\$/)[0].concat(';');
+    acc.replace(new RegExp(`\\$${i+1}`, 'g'), cssVal), cssTemplate).split(/ *\$/)[0].trim().concat(';');
 
 // Given a key and css map, return the cssvalue at the key, with postPend
 // (usually css unit) appended. Returns empty string on no match or invalid input
